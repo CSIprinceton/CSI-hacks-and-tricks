@@ -3,7 +3,7 @@
 ## TigerGPU
 
 
-This script follows the following guides:
+This script follows these guidelines:
  - https://github.com/deepmodeling/deepmd-kit/tree/r0.12
  - https://github.com/deepmodeling/deepmd-kit/blob/r0.12/doc/multi-gpu-support.md
  - https://github.com/deepmodeling/deepmd-kit/blob/r0.12/doc/install-tf.1.14-gpu.md
