@@ -2,15 +2,17 @@
 
 ## TigerGPU
 
-Script provided by Tom Gartner and Pablo Piaggi
 
 This script follows the following guides:
  - https://github.com/deepmodeling/deepmd-kit/tree/r0.12
  - https://github.com/deepmodeling/deepmd-kit/blob/r0.12/doc/multi-gpu-support.md
  - https://github.com/deepmodeling/deepmd-kit/blob/r0.12/doc/install-tf.1.14-gpu.md
+
 and a little bit from here:
  - https://www.tensorflow.org/install/source
  - https://github.com/tensorflow/tensorflow/issues/30703
+
+Script provided by Tom Gartner and Pablo Piaggi
 
 ```
 folder_name=Software-deepmd-kit-1.0
