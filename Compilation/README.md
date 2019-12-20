@@ -182,3 +182,12 @@ make yes-user-deepmd
 make mpi -j $num_cores
 cd $new_folder
 ```
+
+
+TO DO: Include the appropriate optimization flags.
+Tensorflow gives this warning:
+```
+Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+```
+
+
