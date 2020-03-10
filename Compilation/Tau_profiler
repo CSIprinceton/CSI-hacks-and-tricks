@@ -1,0 +1,14 @@
+Tau profiler
+
+Description: Useful to profile serial and parallel codes. Generates user-friendly graphical interface to see the performance of your code.
+
+1) Download the package at: http://taucommander.paratools.com/downloads
+2) Untar it (tar -xvf package.tar.gz)
+3) $ make install INSTALLDIR=/path/to/install
+   A “tau” executable should be found at /path/to/install/bin
+4) Go to the directory where your code is. Follow the steps:
+   4.1) $ tau init --mpi --openmp
+   4.2) Compile your code using “tau compiler your_code”. You can add “tau” before the compiler name to the Makefile. 
+   4.3) $ make (compile the code)
+   4.4) $ tau trial create mpirun -n 4 -- ./your_code.x (you can run this command several times. Each time will create an index, and you can visualize each of the runs separately using “tau trial show $index”. You can visualize the index numbers using “tau trial list”
+   4.5) $ tau trial show $index
