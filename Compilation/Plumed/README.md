@@ -1,4 +1,4 @@
-# Compilation of Plumen and Lammps
+# Compilation of Plumed and Lammps
 
 ## Script for TigerCPU
 
@@ -9,8 +9,7 @@ module purge
 module load intel intel-mpi
 
 cd /home/username
-mkdir Programs
-cd Programs
+mkdir Programs; cd Programs
 
 # Build plumed
 
