@@ -19,7 +19,7 @@ cd plumed2
 make -j 10
 make install
 
-export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/home/username/Programs/Plumed/plumed-install/lib/pkgconfig"
+export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/home/username/Programs/plumed-install/lib/pkgconfig"
 cd ..
 
 # Build lammps
