@@ -15,7 +15,7 @@ mkdir Programs; cd Programs
 
 git clone https://github.com/plumed/plumed2 plumed2
 cd plumed2
-./configure --prefix=/home/username/Programs/plumed-install --enable-modules=all CXX=mpiicpc CXXFLAGS="-Ofast -mtune=skylake-avx512"
+./configure --prefix=/home/username/Programs/plumed-install --enable-modules=all CXX=mpiicpc CXXFLAGS="-Ofast -mtune=skylake-avx512" cross_compiling=yes
 make -j 10
 make install
 
