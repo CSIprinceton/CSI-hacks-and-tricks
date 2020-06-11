@@ -12,7 +12,7 @@ and a little bit from here:
  - https://www.tensorflow.org/install/source
  - https://github.com/tensorflow/tensorflow/issues/30703
 
-Script provided by Tom Gartner and Pablo Piaggi
+Script provided by Tom Gartner
 
 ```
 folder_name=Software-deepmd-kit-1.0
@@ -190,4 +190,125 @@ Tensorflow gives this warning:
 Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
 ```
 
+## Traverse
 
+
+```
+folder_name=DeepMD
+num_cores=20
+
+module purge
+module load rh/devtoolset/7
+module load cudatoolkit/10.0
+module load cudnn/cuda-10.0/7.6.1
+module load openmpi/gcc/3.1.4/64
+module load anaconda3/2019.3
+
+new_folder=`pwd`/$folder_name
+mkdir $new_folder
+cd $new_folder
+echo "Installing in $new_folder"
+
+######################################################
+# Prepare python environment
+######################################################
+conda create --name tensorflow-venv
+conda activate tensorflow-venv
+conda install pip
+pip install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1'
+pip install -U --user keras_applications --no-deps
+pip install -U --user keras_preprocessing --no-deps
+
+######################################################
+# Compile bazel
+######################################################
+cd $new_folder
+wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1-dist.zip
+mkdir bazel-0.24.1
+cd bazel-0.24.1
+unzip ../bazel-0.24.1-dist.zip
+rm ../bazel-0.24.1-dist.zip
+sed -i '/target_platform/a \ \ --host_javabase=@local_jdk//:jdk \\' compile.sh
+./compile.sh
+export PATH=`pwd`/output:$PATH
+
+######################################################
+# Configure tensorflow
+######################################################
+cd $new_folder
+git clone https://github.com/tensorflow/tensorflow tensorflow -b v1.14.0 --depth=1
+cd tensorflow
+tensorflow_root=`pwd`
+echo "Tensor flow folder is $tensorflow_root"
+export TF_CUDA_VERSION="10.0"
+export CUDA_TOOLKIT_PATH="/usr/local/cuda-10.0"
+export TF_CUDNN_VERSION="7.6.1"
+export CUDNN_INSTALL_PATH="/usr/local/cudnn/cuda-10.0/7.6.1"
+export NCCL_INSTALL_PATH="/usr/local/nccl/cuda-10.0/2.5.6/"
+export TF_NCCL_VERSION="2.5.6"
+export TF_CUDA_COMPUTE_CAPABILITIES="7.0"
+export MPI_HOME="/usr/local/openmpi/3.1.4/devtoolset-8/ppc64le"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/nccl/cuda-10.0/2.5.6/lib64"
+./configure
+
+######################################################
+# Compile tensorflow pip package
+######################################################
+bazel build --config=opt --config=cuda //tensorflow/tools/pip_package:build_pip_package
+./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+pip install -U --user /tmp/tensorflow_pkg/tensorflow-1.14.0-cp38-cp38-linux_ppc64le.whl
+
+######################################################
+# Compile tensorflow
+######################################################
+bazel build -c opt --verbose_failures //tensorflow:libtensorflow_cc.so
+
+cd $tensorflow_root
+mkdir $tensorflow_root/lib
+cp -d bazel-bin/tensorflow/libtensorflow_cc.so* $tensorflow_root/lib/
+cp -d bazel-bin/tensorflow/libtensorflow_framework.so* $tensorflow_root/lib/
+cp -d $tensorflow_root/lib/libtensorflow_framework.so.1 $tensorflow_root/lib/libtensorflow_framework.so
+
+mkdir -p $tensorflow_root/include/tensorflow
+cp -r bazel-genfiles/* $tensorflow_root/include/
+cp -r tensorflow/cc $tensorflow_root/include/tensorflow
+cp -r tensorflow/core $tensorflow_root/include/tensorflow
+cp -r third_party $tensorflow_root/include
+cp -r bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include
+cp -r bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/protobuf_archive/src/ $tensorflow_root/include/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $tensorflow_root/include/absl
+
+cd $tensorflow_root/include
+find . -name "*.cc" -type f -delete
+
+rm -rf ~/.cache/bazel/_bazel_*
+
+######################################################
+# Install DeepMD
+######################################################
+cd $new_folder
+deepmd_root=`pwd`
+git clone https://github.com/deepmodeling/deepmd-kit.git deepmd-kit -b r0.12
+cd deepmd-kit-1.0
+deepmd_source_dir=`pwd`
+cd $deepmd_source_dir/source
+mkdir build
+cd build
+cmake3 -DTENSORFLOW_ROOT=$tensorflow_root -DCMAKE_INSTALL_PREFIX=$deepmd_root -DUSE_CUDA_TOOLKIT=true  ..
+make -j $num_cores
+make install
+make lammps
+
+######################################################
+# Install lammps
+######################################################
+cd $new_folder
+git clone https://github.com/lammps/lammps
+cd lammps/src/
+cp -r $deepmd_source_dir/source/build/USER-DEEPMD .
+make yes-user-deepmd
+make mpi -j $num_cores
+cd $new_folder
+
+```
