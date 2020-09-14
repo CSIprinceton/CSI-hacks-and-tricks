@@ -289,7 +289,7 @@ rm -rf ~/.cache/bazel/_bazel_*
 ######################################################
 cd $new_folder
 deepmd_root=`pwd`
-git clone https://github.com/deepmodeling/deepmd-kit.git deepmd-kit -b r0.12
+git clone https://github.com/deepmodeling/deepmd-kit.git deepmd-kit-1.0 -b r1.0
 cd deepmd-kit-1.0
 deepmd_source_dir=`pwd`
 cd $deepmd_source_dir/source
