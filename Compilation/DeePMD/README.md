@@ -250,6 +250,14 @@ export TF_CUDA_COMPUTE_CAPABILITIES="7.0"
 export MPI_HOME="/usr/local/openmpi/3.1.4/devtoolset-8/ppc64le"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/nccl/cuda-10.0/2.5.6/lib64"
 ./configure
+# Before proceeding replace:
+#    nullptr,                     /* tp_print */      
+# with                                                 
+#    NULL,                        /* tp_print */      
+# in the files:                                       
+# tensorflow/python/eager/pywrap_tfe_src.cc           
+# tensorflow/python/lib/core/bfloat16.cc              
+# tensorflow/python/lib/core/ndarray_tensor_bridge.cc 
 
 ######################################################
 # Compile tensorflow pip package
