@@ -1,6 +1,6 @@
-Steps to compile QE (with LIBXC) on Cori KNL
+# Steps to compile QE (with LIBXC) on Cori KNL
 
-1) Download and compile LIBXC
+## 1) Download and compile LIBXC
 
 ```
 git clone https://gitlab.com/libxc/libxc.git
@@ -11,7 +11,7 @@ make -j 16
 make install
 ```
 
-2) Download and compile QE
+## 2) Download and compile QE
 ```
 git clone https://gitlab.com/QEF/q-e.git 
 git checkout qe-6.6 #Only version 6.6 was tested here.
@@ -20,4 +20,4 @@ git checkout qe-6.6 #Only version 6.6 was tested here.
 #The code will ask for the libxc path (/path/to/libxc/)
 ```
 
-3) Please see an example of a submission script in the file sub.cmd 
+## 3) Please see an example of a submission script (for Cori KNL) in the file sub.cmd 
