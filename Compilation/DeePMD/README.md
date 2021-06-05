@@ -320,3 +320,189 @@ make mpi -j $num_cores
 cd $new_folder
 
 ```
+
+## DellaGPU
+
+Following instructions from:
+
+https://github.com/deepmodeling/deepmd-kit/blob/7e534be15448fafbca82b6b71b540dde81edb373/doc/install.md
+https://github.com/deepmodeling/deepmd-kit/blob/7e534be15448fafbca82b6b71b540dde81edb373/doc/install-tf.2.3.md
+
+```
+
+#Load modules
+module load openmpi/gcc/4.1.0 anaconda3/2020.7 cudatoolkit/11.1 cudnn/cuda-11.x/8.2.0
+
+#Conda environment
+conda create --name dpmd python=3.8 cudatoolkit=11 cudnn=8 --channel nvidia
+conda activate dpmd
+pip install tensorflow-gpu==2.4
+#Download deepmd-kit
+git clone --recursive https://github.com/deepmodeling/deepmd-kit.git deepmd-kit
+cd deepmd-kit
+pip install .
+deepmd_source=`pwd`
+
+#Tensorflow C++ library
+cd 
+git clone https://github.com/tensorflow/tensorflow tensorflow -b v2.4.0 --depth=1
+##Using Bazel compiled on DellaGPU (version 3.5.0)
+./configure
+```
+ 
+Here is an example on how to configure tensorflow
+
+```
+(dpmd) [mandrade@della-gpu tensorflow]$ ./configure 
+You have bazel 3.5.0- (@non-git) installed.
+Please specify the location of python. [Default is /home/mandrade/.conda/envs/dpmd/bin/python3]: 
+
+
+Found possible Python library paths:
+  /home/mandrade/.conda/envs/dpmd/lib/python3.8/site-packages
+Please input the desired Python library path to use.  Default is [/home/mandrade/.conda/envs/dpmd/lib/python3.8/site-packages]
+
+Do you wish to build TensorFlow with ROCm support? [y/N]: 
+No ROCm support will be enabled for TensorFlow.
+
+Do you wish to build TensorFlow with CUDA support? [y/N]: y
+CUDA support will be enabled for TensorFlow.
+
+Do you wish to build TensorFlow with TensorRT support? [y/N]: 
+No TensorRT support will be enabled for TensorFlow.
+
+Could not find any cudnn.h, cudnn_version.h matching version '' in any subdirectory:
+        ''
+        'include'
+        'include/cuda'
+        'include/*-linux-gnu'
+        'extras/CUPTI/include'
+        'include/cuda/CUPTI'
+        'local/cuda/extras/CUPTI/include'
+of:
+        '/lib'
+        '/lib64'
+        '/opt/dell/srvadmin/lib64'
+        '/opt/dell/srvadmin/lib64/openmanage'
+        '/opt/dell/srvadmin/lib64/openmanage/smpop'
+        '/opt/mellanox/hcoll/lib'
+        '/opt/mellanox/sharp/lib'
+        '/usr'
+        '/usr/lib64//bind9-export'
+        '/usr/lib64/R/lib'
+        '/usr/lib64/atlas'
+        '/usr/lib64/atlas-corei2'
+        '/usr/lib64/dyninst'
+        '/usr/local/cuda'
+        '/usr/local/cuda-10.2/targets/x86_64-linux/lib'
+        '/usr/local/cuda-11.1/targets/x86_64-linux/lib'
+        '/usr/local/cuda/targets/x86_64-linux/lib'
+        '/usr/local/cudnn'
+Asking for detailed CUDA configuration...
+
+Please specify the CUDA SDK version you want to use. [Leave empty to default to CUDA 10]: 11.1
+
+
+Please specify the cuDNN version you want to use. [Leave empty to default to cuDNN 7]: 8.2.0
+
+
+Please specify the locally installed NCCL version you want to use. [Leave empty to use http://github.com/nvidia/nccl]: 
+
+
+Please specify the comma-separated list of base paths to look for CUDA libraries and headers. [Leave empty to use the default]: /usr/local/cuda-11.1/,/usr/local/cudnn/cuda-11.3/8.2.0/
+
+
+Found CUDA 11.1 in:
+    /usr/local/cuda-11.1/targets/x86_64-linux/lib
+    /usr/local/cuda-11.1/targets/x86_64-linux/include
+Found cuDNN 8 in:
+    /usr/local/cudnn/cuda-11.3/8.2.0/lib64
+    /usr/local/cudnn/cuda-11.3/8.2.0/include
+
+
+Please specify a list of comma-separated CUDA compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus. Each capability can be specified as "x.y" or "compute_xy" to include both virtual and binary GPU code, or as "sm_xy" to only include the binary code.
+Please note that each additional compute capability significantly increases your build time and binary size, and that TensorFlow only supports compute capabilities >= 3.5 [Default is: 3.5,7.0]: 8.0
+
+
+Do you want to use clang as CUDA compiler? [y/N]: 
+nvcc will be used as CUDA compiler.
+
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]: 
+
+
+Please specify optimization flags to use during compilation when bazel option "--config=opt" is specified [Default is -march=native -Wno-sign-compare]: 
+
+
+Would you like to interactively configure ./WORKSPACE for Android builds? [y/N]: 
+Not configuring the WORKSPACE for Android builds.
+
+Preconfigured Bazel build configs. You can use any of the below by adding "--config=<>" to your build command. See .bazelrc for more details.
+	--config=mkl         	# Build with MKL support.
+	--config=mkl_aarch64 	# Build with oneDNN support for Aarch64.
+	--config=monolithic  	# Config for mostly static monolithic build.
+	--config=ngraph      	# Build with Intel nGraph support.
+	--config=numa        	# Build with NUMA support.
+	--config=dynamic_kernels	# (Experimental) Build kernels into separate shared objects.
+	--config=v2          	# Build TensorFlow 2.x instead of 1.x.
+Preconfigured Bazel build configs to DISABLE default on features:
+	--config=noaws       	# Disable AWS S3 filesystem support.
+	--config=nogcp       	# Disable GCP support.
+	--config=nohdfs      	# Disable HDFS support.
+	--config=nonccl      	# Disable NVIDIA NCCL support.
+Configuration finished
+```
+
+Now you can run Bazel to compile the c++ library of tensorflow
+
+```
+bazel build -c opt --verbose_failures //tensorflow:libtensorflow_cc.so
+mkdir ~/deepmd_root
+tensorflow_root=`realpath ~/deepmd_root`
+   cp -d bazel-bin/tensorflow/libtensorflow_cc.so* $tensorflow_root/lib/
+   cp -d bazel-bin/tensorflow/libtensorflow_framework.so* $tensorflow_root/lib/
+   cp -d $tensorflow_root/lib/libtensorflow_framework.so.1 $tensorflow_root/lib/libtensorflow_framework.so
+   l $tensorflow_root/lib/
+   mkdir -p $tensorflow_root/include/tensorflow
+   cp -r bazel-genfiles/* $tensorflow_root/include/
+   cp -r tensorflow/cc $tensorflow_root/include/tensorflow
+   cp -r tensorflow/core $tensorflow_root/include/tensorflow
+   cp -r third_party $tensorflow_root/include
+   cp -r bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include
+   cp -r bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include
+   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/protobuf_archive/src/ $tensorflow_root/include/
+   cp -d $tensorflow_root/lib/libtensorflow_framework.so.2 $tensorflow_root/lib/libtensorflow_framework.so
+   l $tensorflow_root/include/tensorflow
+   rsync -avzh --exclude '_virtual_includes/' --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-bin/ $tensorflow_root/include/
+   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/cc $tensorflow_root/include/tensorflow/
+   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/core $tensorflow_root/include/tensorflow/
+   rsync -avzh --include '*/' --include '*' --exclude '*.cc' third_party/ $tensorflow_root/include/third_party/
+   rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include/Eigen/
+   rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include/unsupported/
+   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $tensorflow_root/include/google/
+   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $tensorflow_root/include/absl/
+```
+
+Finally, you can compile the C++ library of DeepMD-Kit
+
+```
+cd $deepmd_source/source
+mkdir build
+cd build
+cmake -DUSE_CUDA_TOOLKIT=true -DTENSORFLOW_ROOT=$tensorflow_root -DCMAKE_INSTALL_PREFIX=$deepmd_root ..
+make -j 4
+make install
+make lammps
+```
+
+You're now ready to compile Lammps with DeepMD-Kit
+
+```
+cd
+wget https://github.com/lammps/lammps/archive/stable_29Oct2020.tar.gz
+tar -xf stable_29Oct2020.tar.gz
+cd lammps-stable_29Oct2020/src
+cp -r $deepmd_source/source/build/USER-DEEPMD .
+make yes-deepmd yes-kspace
+make -j 12 mpi
+```
