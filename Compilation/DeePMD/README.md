@@ -459,34 +459,26 @@ Now you can run Bazel to compile the c++ library of tensorflow
 bazel build -c opt --verbose_failures //tensorflow:libtensorflow_cc.so
 mkdir ~/deepmd_root
 tensorflow_root=`realpath ~/deepmd_root`
-   cp -d bazel-bin/tensorflow/libtensorflow_cc.so* $tensorflow_root/lib/
-   cp -d bazel-bin/tensorflow/libtensorflow_framework.so* $tensorflow_root/lib/
-   cp -d $tensorflow_root/lib/libtensorflow_framework.so.1 $tensorflow_root/lib/libtensorflow_framework.so
-   l $tensorflow_root/lib/
-   mkdir -p $tensorflow_root/include/tensorflow
-   cp -r bazel-genfiles/* $tensorflow_root/include/
-   cp -r tensorflow/cc $tensorflow_root/include/tensorflow
-   cp -r tensorflow/core $tensorflow_root/include/tensorflow
-   cp -r third_party $tensorflow_root/include
-   cp -r bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include
-   cp -r bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include
-   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/protobuf_archive/src/ $tensorflow_root/include/
-   cp -d $tensorflow_root/lib/libtensorflow_framework.so.2 $tensorflow_root/lib/libtensorflow_framework.so
-   l $tensorflow_root/include/tensorflow
-   rsync -avzh --exclude '_virtual_includes/' --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-bin/ $tensorflow_root/include/
-   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/cc $tensorflow_root/include/tensorflow/
-   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/core $tensorflow_root/include/tensorflow/
-   rsync -avzh --include '*/' --include '*' --exclude '*.cc' third_party/ $tensorflow_root/include/third_party/
-   rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include/Eigen/
-   rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include/unsupported/
-   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $tensorflow_root/include/google/
-   rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $tensorflow_root/include/absl/
+mkdir -p $tensorflow_root/lib
+cp -d bazel-bin/tensorflow/libtensorflow_cc.so* $tensorflow_root/lib/
+cp -d bazel-bin/tensorflow/libtensorflow_framework.so* $tensorflow_root/lib/
+cp -d $tensorflow_root/lib/libtensorflow_framework.so.2 $tensorflow_root/lib/libtensorflow_framework.so
+mkdir -p $tensorflow_root/include/tensorflow
+rsync -avzh --exclude '_virtual_includes/' --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-bin/ $tensorflow_root/include/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/cc $tensorflow_root/include/tensorflow/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/core $tensorflow_root/include/tensorflow/
+rsync -avzh --include '*/' --include '*' --exclude '*.cc' third_party/ $tensorflow_root/include/third_party/
+rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include/Eigen/
+rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include/unsupported/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $tensorflow_root/include/google/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $tensorflow_root/include/absl/
 ```
 
 Finally, you can compile the C++ library of DeepMD-Kit
 
 ```
 cd $deepmd_source/source
+deepmd_root=$tensorflow_root
 mkdir build
 cd build
 cmake -DUSE_CUDA_TOOLKIT=true -DTENSORFLOW_ROOT=$tensorflow_root -DCMAKE_INSTALL_PREFIX=$deepmd_root ..
