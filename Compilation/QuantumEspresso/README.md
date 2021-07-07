@@ -59,3 +59,44 @@ cd q-e-qe-6.4.1
 make -j 10 all
 
 ```
+
+### Scritp for SUMMIT 
+
+```
+module load pgi/20.4 hdf5 essl netlib-lapack cuda
+
+#Using QE commit number: 626d07a1cff06525d08d931a12672b28717f9932
+git clone https://gitlab.com/QEF/q-e.git
+cd q-e
+git clone https://gitlab.com/libxc/libxc.git
+cd libxc
+git checkout 5.1.5
+
+#GNU autotools
+libtoolize
+aclocal -I m4\
+  && autoheader \
+  && automake --add-missing \
+  && autoconf \
+  && autoreconf -i
+
+mkdir ../libxc_lib
+./configure --prefix=`realpath ../libxc_lib`
+make && make install
+
+cd ..
+
+export BLAS_LIBS="-L$OLCF_ESSL_ROOT/lib64 -lessl"
+export LAPACK_LIBS="-L$OLCF_ESSL_ROOT/lib64 -lessl $OLCF_NETLIB_LAPACK_ROOT/lib64/liblapack.a"
+
+./configure --enable-openmp --with-hdf5=$OLCF_HDF5_ROOT \
+            --with-cuda=$OLCF_CUDA_ROOT --with-cuda-runtime=10.1 --with-cuda-cc=70 \
+            --with-libxc=yes --with-libxc-prefix=`realpath ./libxc_lib`
+
+sed -i "/DFLAGS/s/__FFTW/__LINUX_ESSL/" make.inc
+sed -i "/CFLAGS/s/= /= -c11 /" make.inc
+sed -i "s/-lxcf90/-lxcf03 -lxcf90/g" make.inc
+
+make -j 8 pw
+
+```
