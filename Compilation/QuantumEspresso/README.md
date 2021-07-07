@@ -63,7 +63,7 @@ make -j 10 all
 ### Scritp for SUMMIT 
 
 ```
-module load pgi/20.4 hdf5 essl netlib-lapack cuda
+module load pgi/20.4 hdf5 essl netlib-lapack cuda spectrum-mpi/10.3.1.2-20200121
 
 #Using QE commit number: 626d07a1cff06525d08d931a12672b28717f9932
 git clone https://gitlab.com/QEF/q-e.git
