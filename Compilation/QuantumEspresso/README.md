@@ -65,12 +65,12 @@ make -j 10 all
 ```
 module load pgi/20.4 hdf5 essl netlib-lapack cuda spectrum-mpi/10.3.1.2-20200121
 
-#Using QE commit number: 626d07a1cff06525d08d931a12672b28717f9932
+#Using QE commit number: 4dec0ccc59bb1cea8e9e146347c7e713d13ac8d7
 git clone https://gitlab.com/QEF/q-e.git
 cd q-e
 git clone https://gitlab.com/libxc/libxc.git
 cd libxc
-git checkout 5.1.5
+git checkout 4.2.3 #I could not make libxc versions 5.x.x work
 
 #GNU autotools
 libtoolize
@@ -91,11 +91,10 @@ export LAPACK_LIBS="-L$OLCF_ESSL_ROOT/lib64 -lessl $OLCF_NETLIB_LAPACK_ROOT/lib6
 
 ./configure --enable-openmp --with-hdf5=$OLCF_HDF5_ROOT \
             --with-cuda=$OLCF_CUDA_ROOT --with-cuda-runtime=10.1 --with-cuda-cc=70 \
-            --with-libxc=yes --with-libxc-prefix=`realpath ./libxc_lib`
+            --with-libxc=yes --with-libxc-prefix=`realpath ./libxc_lib` --with-libxc-include=`realpath ./libxc_lib/include`
 
 sed -i "/DFLAGS/s/__FFTW/__LINUX_ESSL/" make.inc
 sed -i "/CFLAGS/s/= /= -c11 /" make.inc
-sed -i "s/-lxcf90/-lxcf03 -lxcf90/g" make.inc
 
 make -j 8 pw
 
