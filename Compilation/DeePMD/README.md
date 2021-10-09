@@ -648,7 +648,7 @@ rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel
 Compile DeepMD-Kit
 ```
 git clone --recursive https://github.com/deepmodeling/deepmd-kit.git deepmd-kit
-git checkout v 1.3.3
+git checkout v1.3.3
 cd source
 mkdir build
 cd build
