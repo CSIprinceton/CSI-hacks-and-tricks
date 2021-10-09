@@ -498,3 +498,165 @@ cp -r $deepmd_source/source/build/USER-DEEPMD .
 make yes-deepmd yes-kspace
 make -j 12 mpi
 ```
+
+##Perlmutter
+
+Compilation performed on 10/09/2021.
+
+Load the following modules:
+
+```
+module load gcc/9.3.0 cudnn/8.2.0 python/3.8-anaconda-2020.11
+```
+
+The following modules were up:
+
+```
+  1) craype-x86-rome          5) xpmem/2.2.40-7.0.1.0_2.7__g1d7a24d.shasta   9) PrgEnv-nvidia/8.1.0        13) xalt/2.10.2
+  2) libfabric/1.11.0.4.79    6) craype/2.7.10                              10) cray-pmi/6.0.13            14) darshan/3.2.1    (io)
+  3) craype-network-ofi       7) cray-dsmml/0.2.1                           11) cray-pmi-lib/6.0.13        15) gcc/9.3.0        (c)
+  4) perftools-base/21.09.0   8) cray-libsci/21.08.1.2                      12) cuda/11.3.0         (g,c)  16) cray-mpich/8.1.9 (mpi)
+```
+Download Bazel binary (version 3.7.2):
+```
+mkdir ~/bin
+wget https://github.com/bazelbuild/bazel/releases/download/3.7.2/bazel-3.7.2-linux-x86_64 ~/bin/
+cd ~/bin
+chmod +x bazel-3.7.2-linux-x86_64
+ln -s bazel-3.7.2-linux-x86_64 bazel
+cd
+```
+```
+mkdir DeepMD
+cd DeepMD
+git clone https://github.com/tensorflow/tensorflow tensorflow -b v2.4.0 --depth=1
+cd tensorflow
+```
+
+```
+./configure
+You have bazel 3.7.2 installed.
+Please specify the location of python. [Default is /global/common/software/nersc/cos1.3/python/3.8-anaconda-2020.11/bin/python3]: 
+
+
+Found possible Python library paths:
+  /global/common/software/nersc/cos1.3/python/3.8-anaconda-2020.11/lib/python3.8/site-packages
+Please input the desired Python library path to use.  Default is [/global/common/software/nersc/cos1.3/python/3.8-anaconda-2020.11/lib/python3.8/site-packages]
+
+Do you wish to build TensorFlow with ROCm support? [y/N]: 
+No ROCm support will be enabled for TensorFlow.
+
+Do you wish to build TensorFlow with CUDA support? [y/N]: Y
+CUDA support will be enabled for TensorFlow.
+
+Do you wish to build TensorFlow with TensorRT support? [y/N]: 
+No TensorRT support will be enabled for TensorFlow.
+
+Could not find any cuda.h matching version '' in any subdirectory:
+        ''
+        'include'
+        'include/cuda'
+        'include/*-linux-gnu'
+        'extras/CUPTI/include'
+        'include/cuda/CUPTI'
+        'local/cuda/extras/CUPTI/include'
+of:
+        '/lib'
+        '/lib64'
+        '/opt/cray/pe/lib64'
+        '/opt/cray/pe/lib64/cce'
+        '/opt/cray/xpmem/default/lib64'
+        '/usr'
+        '/usr/lib'
+        '/usr/lib/tls'
+        '/usr/lib64'
+        '/usr/lib64/tls'
+Asking for detailed CUDA configuration...
+
+Please specify the CUDA SDK version you want to use. [Leave empty to default to CUDA 10]: 11.3
+
+
+Please specify the cuDNN version you want to use. [Leave empty to default to cuDNN 7]: 8.2
+
+
+Please specify the locally installed NCCL version you want to use. [Leave empty to use http://github.com/nvidia/nccl]: 
+
+
+Please specify the comma-separated list of base paths to look for CUDA libraries and headers. [Leave empty to use the default]: /global/common/software/nersc/cos1.3/cuda/11.3.0,/global/common/software/nersc/cos1.3/cudnn/8.2.0/cuda/11.3/
+
+
+Found CUDA 11.3 in:
+    /global/common/software/nersc/cos1.3/cuda/11.3.0/targets/x86_64-linux/lib
+    /global/common/software/nersc/cos1.3/cuda/11.3.0/targets/x86_64-linux/include
+Found cuDNN 8 in:
+    /global/common/software/nersc/cos1.3/cudnn/8.2.0/cuda/11.3/lib64
+    /global/common/software/nersc/cos1.3/cudnn/8.2.0/cuda/11.3/include
+
+
+Please specify a list of comma-separated CUDA compute capabilities you want to build with.
+You can find the compute capability of your device at: https://developer.nvidia.com/cuda-gpus. Each capability can be specified as "x.y" or "compute_xy" to include both virtual and binary GPU code, or as "sm_xy" to only include the binary code.
+Please note that each additional compute capability significantly increases your build time and binary size, and that TensorFlow only supports compute capabilities >= 3.5 [Default is: 8.0]: 
+
+
+Do you want to use clang as CUDA compiler? [y/N]: 
+nvcc will be used as CUDA compiler.
+
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /opt/cray/pe/gcc/9.3.0/bin/gcc]: 
+
+
+Please specify optimization flags to use during compilation when bazel option "--config=opt" is specified [Default is -march=native -Wno-sign-compare]: 
+
+
+Would you like to interactively configure ./WORKSPACE for Android builds? [y/N]: 
+Not configuring the WORKSPACE for Android builds.
+
+Preconfigured Bazel build configs. You can use any of the below by adding "--config=<>" to your build command. See .bazelrc for more details.
+	--config=mkl         	# Build with MKL support.
+	--config=mkl_aarch64 	# Build with oneDNN support for Aarch64.
+	--config=monolithic  	# Config for mostly static monolithic build.
+	--config=ngraph      	# Build with Intel nGraph support.
+	--config=numa        	# Build with NUMA support.
+	--config=dynamic_kernels	# (Experimental) Build kernels into separate shared objects.
+	--config=v2          	# Build TensorFlow 2.x instead of 1.x.
+Preconfigured Bazel build configs to DISABLE default on features:
+	--config=noaws       	# Disable AWS S3 filesystem support.
+	--config=nogcp       	# Disable GCP support.
+	--config=nohdfs      	# Disable HDFS support.
+	--config=nonccl      	# Disable NVIDIA NCCL support.
+Configuration finished
+```
+
+Build tensorflow
+```
+bazel build -c opt --verbose_failures //tensorflow:libtensorflow_cc.so
+tensorflow_root=`realpath ..`
+mkdir -p $tensorflow_root/lib
+cp -d bazel-bin/tensorflow/libtensorflow_cc.so* $tensorflow_root/lib/
+cp -d bazel-bin/tensorflow/libtensorflow_framework.so* $tensorflow_root/lib/
+cp -d $tensorflow_root/lib/libtensorflow_framework.so.2 $tensorflow_root/lib/libtensorflow_framework.so
+mkdir -p $tensorflow_root/include/tensorflow
+rsync -avzh --exclude '_virtual_includes/' --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-bin/ $tensorflow_root/include/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/cc $tensorflow_root/include/tensorflow/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' tensorflow/core $tensorflow_root/include/tensorflow/
+rsync -avzh --include '*/' --include '*' --exclude '*.cc' third_party/ $tensorflow_root/include/third_party/
+rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/Eigen/ $tensorflow_root/include/Eigen/
+rsync -avzh --include '*/' --include '*' --exclude '*.txt' bazel-tensorflow/external/eigen_archive/unsupported/ $tensorflow_root/include/unsupported/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_protobuf/src/google/ $tensorflow_root/include/google/
+rsync -avzh --include '*/' --include '*.h' --include '*.inc' --exclude '*' bazel-tensorflow/external/com_google_absl/absl/ $tensorflow_root/include/absl/
+```
+
+Compile DeepMD-Kit
+```
+git clone --recursive https://github.com/deepmodeling/deepmd-kit.git deepmd-kit
+git checkout v 1.3.3
+cd source
+mkdir build
+cd build
+deepmd_root=$tensorflow_root
+CC=gcc cmake -DUSE_CUDA_TOOLKIT=true -DTENSORFLOW_ROOT=$tensorflow_root -DCMAKE_INSTALL_PREFIX=$deepmd_root ..
+make -j 4 
+make install 
+make lammps
+```
+
+
