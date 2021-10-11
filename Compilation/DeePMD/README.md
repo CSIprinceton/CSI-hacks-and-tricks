@@ -659,4 +659,18 @@ make install
 make lammps
 ```
 
+Compile Lammps
+
+```
+cd $tensorflow_root
+wget https://github.com/lammps/lammps/archive/stable_29Oct2020.tar.gz
+tar -xf stable_29Oct2020.tar.gz
+cd lammps-stable_29Oct2020/src
+cp -r ../../../deepmd-kit/source/build/USER-DEEPMD/ .
+sed -i 's/mpicxx/CC/g' MPI/Makefile.mpi
+make yes-user-deepmd yes-kspace
+#One could also make yes-gpu. Before doing so, go to ../lib/gpu and compile this library first
+make -j 4 mpi
+```
+
 
