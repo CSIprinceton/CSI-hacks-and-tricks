@@ -18,6 +18,8 @@ wget http://www.tddft.org/programs/libxc/down.php?file=4.3.4/libxc-4.3.4.tar.gz
 tar -xf down.php?file=4.3.4%2Flibxc-4.3.4.tar.gz
 cd libxc-4.3.4
 ./configure --prefix=${qedir}/libxc-install CC=icc FC=ifort
+make -j 4
+make install
 
 # install quantum espresso 6.4.1 - 6.5 doesn't seen to work with these instructions
 cd ../
