@@ -673,4 +673,42 @@ make yes-user-deepmd yes-kspace
 make -j 4 mpi
 ```
 
+## SUMMIT
 
+Code compiled on 12/10/2022
+DeepMD-Kit commit: 6e3d4a626af965e951298f1bce9a9d0a2bbda317
+DeepMD-Kit version: 2.1.5
+Lammps version: stable_23Jun2022
+
+Load modules:
+
+```
+module load gcc cuda cmake spectrum-mpi/10.4.0.3-20210112 open-ce/1.2.0-py38-0
+```
+
+The following modules were loaded during compilation:
+
+```
+  1) lsf-tools/2.0                4) xalt/1.2.1             7) nsight-compute/2021.2.1     10) gcc/9.1.0
+  2) hsi/5.0.2.p5                 5) DefApps                8) nsight-systems/2021.3.1.54  11) spectrum-mpi/10.4.0.3-20210112
+  3) darshan-runtime/3.3.0-lite   6) open-ce/1.2.0-py38-0   9) cuda/11.0.3                 12) cmake/3.23.2
+```
+
+Go to the DeepMD-kit source folder and execute the commands below. Make sure you have the variable "deepmd_root" set to some existing path.
+
+```
+mkdir build
+cd build
+CC=gcc cmake -DUSE_CUDA_TOOLKIT=true -DCMAKE_INSTALL_PREFIX=$deepmd_root -DTENSORFLOW_ROOT=/sw/summit/open-ce/anaconda-base/envs/open-ce-1.2.0-py38-0/lib/python3.8/site-packages/tensorflow/ ..
+make -j 8
+make install
+make lammps
+```
+
+Copy USER-DEEPMD to the scr folder in LAMMPS. Go to the scr folder in Lammps and execute the following:
+
+```
+git checkout stable_23Jun2022
+make yes-kspace yes-molecule yes-user-deepmd
+make -j 8 mpi
+```
