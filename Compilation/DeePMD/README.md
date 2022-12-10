@@ -676,8 +676,11 @@ make -j 4 mpi
 ## SUMMIT
 
 Code compiled on 12/10/2022
+
 DeepMD-Kit commit: 6e3d4a626af965e951298f1bce9a9d0a2bbda317
+
 DeepMD-Kit version: 2.1.5
+
 Lammps version: stable_23Jun2022
 
 Load modules:
