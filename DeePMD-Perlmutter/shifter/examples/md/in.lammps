@@ -1,0 +1,34 @@
+timer 		timeout 23:30:00 every 50000
+
+variable ibead  uloop 32 pad
+units           metal
+boundary        p p p
+atom_style      atomic
+atom_modify map yes
+
+neighbor        2.0 bin
+neigh_modify    every 10 delay 0 check no
+
+read_data conf332
+
+pair_style deepmd frozen_model_compressed.pb
+pair_coeff	* *
+
+variable        pressure equal 1.0
+variable        pressureDamp equal 0.5 # This is 1 ps
+variable        temperature equal 323.0
+variable        tempDamp equal 0.1
+
+timestep        0.0005
+
+# equilibrate ice configuration to desired pressure
+fix 1 all npt temp ${temperature} ${temperature} ${tempDamp} aniso ${pressure} ${pressureDamp} ${pressureDamp}
+
+thermo_style    custom step pe ke etotal temp pxx pyy pzz pxy pxz pyz press lx ly lz xy xz yz vol density
+thermo          100
+fix 		length_print all print 100 "$(step) $(pe) $(lx) $(ly) $(lz) $(density)" append length${ibead}.out screen no title "#step pe lx ly lz density"
+dump		1 all custom 100 ${ibead}.xyz id type x y z 
+dump_modify	1 sort id append yes
+
+run             1000
+write_restart restart.${ibead}
