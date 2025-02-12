@@ -11,7 +11,7 @@ The installation is located at:
 
 The pseudopotential files are located at:
 ```
-/tigress/yifanl/Softwares/vasp_potpaw
+/projects/y/yifanl/Softwares/vasp_potpaw
 ```
 
 Make sure to load the following modules before running:
