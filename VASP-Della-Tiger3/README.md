@@ -29,3 +29,10 @@ module load intel-oneapi/2024.2 intel-mpi/oneapi/2021.13 intel-mkl/2024.2
 Check `tiger3_example` for a minimal runnable example.
 
 Contact Yifan Li (yifanl@princeton.edu) for any questions.
+
+## Perlmutter
+
+For VASP usage on Perlmutter, please check out this page: [VASP](https://docs.nersc.gov/applications/vasp/).
+
+
+**Contact Yifan Li (yifanl@princeton.edu) for any questions.**
