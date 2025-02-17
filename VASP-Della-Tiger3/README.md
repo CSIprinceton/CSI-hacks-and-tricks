@@ -9,6 +9,11 @@ The installation is located at:
 /projects/y/yifanl/Softwares/vasp.6.5.0/bin
 ```
 
+The `wannier90` installation is located at 
+```
+/projects/y/yifanl/Softwares/wannier90-3.1.0/build/bin
+```
+
 The pseudopotential files are located at:
 ```
 /projects/y/yifanl/Softwares/vasp_potpaw
@@ -25,6 +30,11 @@ Check `della_example` for a minimal runnable example.
 The installation is located at:
 ```
 /scratch/gpfs/CAR/Packages/vasp.6.5.0/bin
+```
+
+The `wannier90` installation is located at 
+```
+/scratch/gpfs/CAR/Packages/wannier90-3.1.0/build/bin
 ```
 
 The pseudopotential files are located at:
