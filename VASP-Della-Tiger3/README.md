@@ -1,6 +1,6 @@
 # Car Group's VASP on Della and Tiger3
 
-Updated: 02/12/2025
+Updated: 06/02/2026
 
 ## Della
 
@@ -21,7 +21,7 @@ The pseudopotential files are located at:
 
 Make sure to load the following modules before running:
 ```
-module load intel/2024.0 intel-mpi/intel/2021.7.0 intel-mkl/2024.0
+module load intel-oneapi/2024.2 intel-mpi/oneapi/2021.13 intel-mkl/2024.2
 ```
 Check `della_example` for a minimal runnable example.
 

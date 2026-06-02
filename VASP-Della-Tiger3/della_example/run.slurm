@@ -12,5 +12,5 @@
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 export PATH=$PATH:/projects/y/yifanl/Softwares/vasp.6.5.0/bin
 module purge
-module load intel/2024.0 intel-mpi/intel/2021.7.0 intel-mkl/2024.0
+module load intel-oneapi/2024.2 intel-mpi/oneapi/2021.13 intel-mkl/2024.2
 srun vasp_std
